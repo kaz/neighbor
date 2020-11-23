@@ -2,7 +2,7 @@
 	.build_version macos, 11, 0	sdk_version 11, 0
 	.intel_syntax noprefix
 	.section	__TEXT,__const
-	.p2align	5               ## -- Begin function find
+	.p2align	5               ## -- Begin function lookup_simd
 LCPI0_0:
 	.space	32,15
 LCPI0_1:
@@ -39,9 +39,9 @@ LCPI0_1:
 	.byte	3                       ## 0x3
 	.byte	4                       ## 0x4
 	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_find
+	.globl	_lookup_simd
 	.p2align	4, 0x90
-_find:                                  ## @find
+_lookup_simd:                           ## @lookup_simd
 ## %bb.0:
 	push	rbp
 	mov	rbp, rsp

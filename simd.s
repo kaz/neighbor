@@ -11,7 +11,7 @@ DATA LCDATA1<>+0x030(SB)/8, $0x0302020102010100
 DATA LCDATA1<>+0x038(SB)/8, $0x0403030203020201
 GLOBL LCDATA1<>(SB), 8, $64
 
-TEXT ·__find(SB), $0-40
+TEXT ·__lookup_simd(SB), $0-40
 
     MOVQ haystack+0(FP), DI
     MOVQ haystackLen+8(FP), SI

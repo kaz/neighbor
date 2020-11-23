@@ -1,6 +1,6 @@
 #include <immintrin.h>
 
-void find(uint64_t* haystack, int haystack_len, uint64_t needle, int tolerance, int* result) {
+void lookup_simd(uint64_t* haystack, int haystack_len, uint64_t needle, int tolerance, int* result) {
 	__m256i zero = _mm256_setzero_si256();
 	__m256i mask = _mm256_set1_epi8(0xF);
 

@@ -22,7 +22,7 @@ func (v *V2) Build(data []uint64) {
 		v.tree.Add(ent)
 	}
 }
-func (v *V2) Lookup(value uint64, tolerance int) []uint64 {
+func (v *V2) Lookup(value uint64, tolerance int) int {
 	return v.tree.Find(value, tolerance)
 }
 
@@ -50,23 +50,23 @@ func (n *Node) Add(value uint64) {
 	child.Add(value)
 }
 
-func (t *Tree) Find(value uint64, tolerance int) []uint64 {
+func (t *Tree) Find(value uint64, tolerance int) int {
 	if t.root == nil {
-		return []uint64{}
+		return 0
 	}
 	return t.root.Find(value, tolerance)
 }
-func (n *Node) Find(value uint64, tolerance int) []uint64 {
+func (n *Node) Find(value uint64, tolerance int) int {
 	distance := bits.OnesCount64(n.value ^ value)
 
-	result := []uint64{}
+	result := 0
 	if distance <= tolerance {
-		result = append(result, n.value)
+		result++
 	}
 
 	for key, child := range n.children {
 		if distance-tolerance <= key && key <= distance+tolerance {
-			result = append(result, child.Find(value, tolerance)...)
+			result += child.Find(value, tolerance)
 		}
 	}
 

@@ -14,16 +14,16 @@ func (v *V2_1) Build(data []uint64) {
 		v.tree.Add(ent)
 	}
 }
-func (v *V2_1) Lookup(value uint64, tolerance int) []uint64 {
-	return v.tree.Find1(value, tolerance)
+func (v *V2_1) Lookup(value uint64, tolerance int) int {
+	return v.tree.FindLoop(value, tolerance)
 }
 
-func (t *Tree) Find1(value uint64, tolerance int) []uint64 {
+func (t *Tree) FindLoop(value uint64, tolerance int) int {
 	if t.root == nil {
-		return []uint64{}
+		return 0
 	}
 
-	result := []uint64{}
+	result := 0
 	candidates := []*Node{t.root}
 
 	for len(candidates) > 0 {
@@ -32,7 +32,7 @@ func (t *Tree) Find1(value uint64, tolerance int) []uint64 {
 
 		distance := bits.OnesCount64(n.value ^ value)
 		if distance <= tolerance {
-			result = append(result, n.value)
+			result++
 		}
 
 		for key, child := range n.children {

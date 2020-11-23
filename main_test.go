@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"sort"
 	"testing"
 	"time"
 )
 
 var (
-	testsLen    = 10
+	testsLen    = 100
 	databaseLen = 1_000_000
 	benchLen    = 10_000_000
 
@@ -48,30 +47,12 @@ func genTest(t *testing.T, idx Index) {
 			for _, ent := range tests {
 				actual := idx.Lookup(ent, tolerance)
 				expected := reference.Lookup(ent, tolerance)
-				if !eq(actual, expected) {
+				if actual != expected {
 					t.Errorf("ent=%d, actual=%d, expected=%d", ent, actual, expected)
 				}
 			}
 		})
 	}
-}
-
-func eq(a, b []uint64) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	sort.Slice(a, func(i, j int) bool {
-		return a[i] < a[j]
-	})
-	sort.Slice(b, func(i, j int) bool {
-		return b[i] < b[j]
-	})
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
 }
 
 func genBenchmark(b *testing.B, idx Index) {

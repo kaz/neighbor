@@ -19,9 +19,9 @@ type (
 func (v *V1_1) Build(data []uint64) {
 	v.data = data
 }
-func (v *V1_1) Lookup(value uint64, tolerance int) []uint64 {
+func (v *V1_1) Lookup(value uint64, tolerance int) int {
 	gptr := int64(-1)
-	result := []uint64{}
+	result := int64(0)
 
 	for i := 0; i < runtime.NumCPU(); i++ {
 		v.wg.Add(1)
@@ -33,14 +33,12 @@ func (v *V1_1) Lookup(value uint64, tolerance int) []uint64 {
 					return
 				}
 				if bits.OnesCount64(v.data[ptr]^value) <= tolerance {
-					v.mu.Lock()
-					result = append(result, v.data[ptr])
-					v.mu.Unlock()
+					atomic.AddInt64(&result, 1)
 				}
 			}
 		}()
 	}
 
 	v.wg.Wait()
-	return result
+	return int(result)
 }

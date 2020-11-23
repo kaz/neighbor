@@ -9,7 +9,7 @@ func __lookup_popcnt(haystack, haystackLen, needle, tolerance, result unsafe.Poi
 
 func LookupPopcnt(haystack []uint64, needle uint64, tolerance int) int {
 	var result int
-	__lookup_simd(
+	__lookup_popcnt(
 		unsafe.Pointer(&haystack[0]),
 		unsafe.Pointer(uintptr(len(haystack))),
 		unsafe.Pointer(uintptr(needle)),

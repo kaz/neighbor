@@ -3,8 +3,8 @@
 void lookup_popcnt(uint64_t* haystack, int haystack_len, uint64_t needle, int tolerance, int* result) {
 	*result = 0;
 	for (uint64_t i = 0; i < haystack_len; i++) {
-		if (popcnt(haystack[i] ^ needle) <= tolerance) {
-			*result++;
+		if (_mm_popcnt_u64(haystack[i] ^ needle) <= tolerance) {
+			++*result;
 		}
 	}
 }

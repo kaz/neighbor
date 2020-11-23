@@ -1,5 +1,14 @@
 #include <immintrin.h>
 
+void lookup_popcnt(uint64_t* haystack, int haystack_len, uint64_t needle, int tolerance, int* result) {
+	*result = 0;
+	for (uint64_t i = 0; i < haystack_len; i++) {
+		if (popcnt(haystack[i] ^ needle) <= tolerance) {
+			*result++;
+		}
+	}
+}
+
 void lookup_simd(uint64_t* haystack, int haystack_len, uint64_t needle, int tolerance, int* result) {
 	__m256i zero = _mm256_setzero_si256();
 	__m256i mask = _mm256_set1_epi8(0xF);

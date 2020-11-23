@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	V1_1 struct {
+	V4_0 struct {
 		data []uint64
 
 		wg sync.WaitGroup
@@ -16,10 +16,10 @@ type (
 	}
 )
 
-func (v *V1_1) Build(data []uint64) {
+func (v *V4_0) Build(data []uint64) {
 	v.data = data
 }
-func (v *V1_1) Lookup(value uint64, tolerance int) int {
+func (v *V4_0) Lookup(value uint64, tolerance int) int {
 	gptr := int64(-1)
 	result := int64(0)
 

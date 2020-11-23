@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	testsLen    = 1_000
+	testsLen    = 10
 	databaseLen = 1_000_000
 	benchLen    = 10_000_000
 
@@ -19,7 +19,7 @@ var (
 
 	reference = &V1{}
 
-	tolerances = []int{0, 1, 2, 4, 8, 16, 32}
+	tolerances = []int{0, 1, 2, 4, 8, 16}
 )
 
 func TestMain(m *testing.M) {
@@ -42,9 +42,9 @@ func createDataSet(len int) []uint64 {
 }
 
 func genTest(t *testing.T, idx Index) {
+	idx.Build(database)
 	for _, tolerance := range tolerances {
 		t.Run(fmt.Sprintf("tolerance=%d", tolerance), func(t *testing.T) {
-			idx.Build(database)
 			for _, ent := range tests {
 				actual := idx.Lookup(ent, tolerance)
 				expected := reference.Lookup(ent, tolerance)
@@ -75,8 +75,8 @@ func eq(a, b []uint64) bool {
 }
 
 func genBenchmark(b *testing.B, idx Index) {
+	idx.Build(database)
 	for _, tolerance := range tolerances {
-		idx.Build(database)
 		b.Run(fmt.Sprintf("tolerance=%d", tolerance), func(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {

@@ -2,13 +2,20 @@ package main
 
 import "math/bits"
 
-func v1(data []uint64, tolerance int) int {
-	result := 0
-	for i := 0; i < len(data); i++ {
-		for j := i; j < len(data); j++ {
-			if bits.OnesCount64(data[i]^data[j]) <= tolerance {
-				result += 1
-			}
+type (
+	V1 struct {
+		data []uint64
+	}
+)
+
+func (v *V1) Build(data []uint64) {
+	v.data = data
+}
+func (v *V1) Lookup(value uint64, tolerance int) []uint64 {
+	result := []uint64{}
+	for _, ent := range v.data {
+		if bits.OnesCount64(ent^value) <= tolerance {
+			result = append(result, ent)
 		}
 	}
 	return result

@@ -3,46 +3,37 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"sync"
+	"sort"
 	"testing"
 	"time"
 )
 
 var (
-	reference = v1
+	testsLen    = 1_000
+	databaseLen = 1_000_000
+	benchLen    = 10_000_000
 
-	tolerances = []int{8, 16, 32}
-	lengths    = []int{2_000, 10_000, 50_000}
+	tests    []uint64
+	database []uint64
+	bench    []uint64
 
-	dataSets = map[int][]uint64{}
-	expected = map[int]map[int]int{}
+	reference = &V1{}
+
+	tolerances = []int{0, 1, 2, 4, 8, 16, 32}
 )
 
 func TestMain(m *testing.M) {
-	wg := &sync.WaitGroup{}
-	mu := &sync.Mutex{}
+	tests = createDataSet(testsLen)
+	database = createDataSet(databaseLen)
+	bench = createDataSet(benchLen)
 
-	for _, len := range lengths {
-		dataSets[len] = createDataSet(len)
-		expected[len] = map[int]int{}
-		for _, tolerance := range tolerances {
-			wg.Add(1)
-			go func(len, tolerance int) {
-				mu.Lock()
-				expected[len][tolerance] = reference(dataSets[len], tolerance)
-				mu.Unlock()
-				wg.Done()
-			}(len, tolerance)
-		}
-	}
+	reference.Build(database)
 
-	wg.Wait()
 	m.Run()
 }
 
 func createDataSet(len int) []uint64 {
 	rand.Seed(time.Now().UnixNano())
-
 	data := make([]uint64, len)
 	for i := 0; i < len; i++ {
 		data[i] = rand.Uint64()
@@ -50,28 +41,47 @@ func createDataSet(len int) []uint64 {
 	return data
 }
 
-func genTest(t *testing.T, fn func([]uint64, int) int) {
-	for len, data := range dataSets {
-		for _, tolerance := range tolerances {
-			t.Run(fmt.Sprintf("len=%d,tolerance=%d", len, tolerance), func(t *testing.T) {
-				result := fn(data, tolerance)
-				if result != expected[len][tolerance] {
-					t.Errorf("actual=%d,expected=%d", result, expected[len][tolerance])
+func genTest(t *testing.T, idx Index) {
+	for _, tolerance := range tolerances {
+		t.Run(fmt.Sprintf("tolerance=%d", tolerance), func(t *testing.T) {
+			idx.Build(database)
+			for _, ent := range tests {
+				actual := idx.Lookup(ent, tolerance)
+				expected := reference.Lookup(ent, tolerance)
+				if !eq(actual, expected) {
+					t.Errorf("ent=%d, actual=%d, expected=%d", ent, actual, expected)
 				}
-			})
-		}
+			}
+		})
 	}
 }
 
-func genBenchmark(b *testing.B, fn func([]uint64, int) int) {
-	for len, data := range dataSets {
-		for _, tolerance := range tolerances {
-			b.Run(fmt.Sprintf("len=%d,tolerance=%d", len, tolerance), func(b *testing.B) {
-				b.ResetTimer()
-				for i := 0; i < b.N; i++ {
-					fn(data, tolerance)
-				}
-			})
+func eq(a, b []uint64) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	sort.Slice(a, func(i, j int) bool {
+		return a[i] < a[j]
+	})
+	sort.Slice(b, func(i, j int) bool {
+		return b[i] < b[j]
+	})
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			return false
 		}
+	}
+	return true
+}
+
+func genBenchmark(b *testing.B, idx Index) {
+	for _, tolerance := range tolerances {
+		idx.Build(database)
+		b.Run(fmt.Sprintf("tolerance=%d", tolerance), func(b *testing.B) {
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				idx.Lookup(bench[i], tolerance)
+			}
+		})
 	}
 }

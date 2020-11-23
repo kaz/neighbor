@@ -5,9 +5,9 @@ import (
 )
 
 func TestV1(t *testing.T) {
-	genTest(t, v1)
+	genTest(t, &V1{})
 }
 
 func BenchmarkV1(b *testing.B) {
-	genBenchmark(b, v1)
+	genBenchmark(b, &V1{})
 }

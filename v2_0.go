@@ -3,7 +3,7 @@ package main
 import "math/bits"
 
 type (
-	V2 struct {
+	V2_0 struct {
 		tree *Tree
 	}
 
@@ -16,13 +16,13 @@ type (
 	}
 )
 
-func (v *V2) Build(data []uint64) {
+func (v *V2_0) Build(data []uint64) {
 	v.tree = &Tree{}
 	for _, ent := range data {
 		v.tree.Add(ent)
 	}
 }
-func (v *V2) Lookup(value uint64, tolerance int) int {
+func (v *V2_0) Lookup(value uint64, tolerance int) int {
 	return v.tree.Find(value, tolerance)
 }
 

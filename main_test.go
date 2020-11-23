@@ -16,7 +16,7 @@ var (
 	database []uint64
 	bench    []uint64
 
-	reference = &V1{}
+	reference = &V1_0{}
 
 	tolerances = []int{0, 1, 2, 4, 8, 16}
 )
